@@ -19,28 +19,38 @@ app.listen(process.env.PORT || 1337, () => console.log("webhook is listening on 
 
 // Accepts POST requests at /webhook endpoint
 app.post("/webhook", (req, res) => {
-  //Parsing request from RP
-  let to = req.body.to_no_plus;
-  let msg_body = req.body.text;
-  
-  axios({
-    method: "POST",
-    url: `https://graph.facebook.com/v17.0/${phone_number_id}/messages`, 
-    data: {
-        "messaging_product": "whatsapp",
-        "to": to,
-        "type": "template",
-        "template": {
-            "name": msg_body,
-            "language": {
-                "code": "en_US"
-            }
-        }
-    },
-    headers: { "Content-Type": "application/json", Authorization: 'Bearer ' + token },
-  }).catch((err) => {
-      console.log("Error: There is an error in Post Req - " + err); 
-  });
+
+  // Check the Incoming webhook message
+  console.log(JSON.stringify(req.body, null, 2));
+
+  if (req.body.text && req.body.to_no_plus) {
+    //Parsing request from RP
+    let text = req.body.text.split("|"); // separate template title and language code
+    let to = req.body.to_no_plus;
+
+    let msg_body = text[0];
+    let language_code = text[1] ? text[1] : "en_US"
+    
+    axios({
+      method: "POST",
+      url: `https://graph.facebook.com/v17.0/${phone_number_id}/messages`, 
+      data: {
+          "messaging_product": "whatsapp",
+          "to": to,
+          "type": "template",
+          "template": {
+              "name": msg_body,
+              "language": {
+                  "code": language_code
+              }
+          }
+      },
+      headers: { "Content-Type": "application/json", Authorization: 'Bearer ' + token },
+    }).catch((err) => {
+        console.log("Error: There is an error in Post Req - " + err); 
+    });
+
+  }
 
   // info on WhatsApp text message payload: https://developers.facebook.com/docs/whatsapp/cloud-api/webhooks/payload-examples#text-messages
   if (req.body.object) {

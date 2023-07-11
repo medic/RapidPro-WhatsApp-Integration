@@ -20,7 +20,7 @@ Flow the steps [here](https://developers.facebook.com/docs/whatsapp/cloud-api/ge
 
 7. On send URL is the webhook that accepts POST request when RapidPro want to send a message. this is where our webhook conduit between RP and facebook's Graph API comes in. it accepts request from RP then post that data to https://graph.facebook.com/v17.0/. It also accepts request from WhatsApp then post that data to RP. example of send URL will be https://a65e-154-160-14-26.ngrok-free.app/webhook
 
-8. On Request Body use this Json format {"text":{{text}},"to_no_plus":{{to_no_plus}},"from_no_plus":{{from_no_plus}}}
+8. On Request Body use this Json format {"text":{{text}}, "to_no_plus":{{to_no_plus}}}
 
 9. On Reponse put the text 'OK'
 
@@ -48,7 +48,7 @@ Flow the steps [here](https://developers.facebook.com/docs/whatsapp/cloud-api/ge
 
 ## Notes/known issues
 1. WhatsApp TOKEN refreshes every 24hours. We are yet to add the token refresh snippet. We  currently manually copy the token from Meta dashboard.
-2. Messages from RP flows needs to be saved as templates on Meta Dashboard. And template title is used as flow messages.
+2. Messages from RP flows needs to be saved as templates on Meta Dashboard. The template title is used as the flow message.
 
 ## Reference
 https://developers.facebook.com/docs/whatsapp/sample-app-endpoints

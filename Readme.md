@@ -48,7 +48,7 @@ Flow the steps [here](https://developers.facebook.com/docs/whatsapp/cloud-api/ge
 
 ## Notes/known issues
 1. WhatsApp TOKEN refreshes every 24hours. We are yet to add the token refresh snippet. We  currently manually copy the token from Meta dashboard.
-2. Messages from RP flows needs to be saved as templates on Meta Dashboard. And template is used as flow messages.
+2. Messages from RP flows needs to be saved as templates on Meta Dashboard. And the template title is used as the flow messages.
 
 ## Reference
 https://developers.facebook.com/docs/whatsapp/sample-app-endpoints

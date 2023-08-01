@@ -30,11 +30,7 @@ app.post("/webhook", (req, res) => {
 
     let msg_body = text[0];
     let language_code = text[1] ? text[1] : "en_US"
-    
-    axios({
-      method: "POST",
-      url: `https://graph.facebook.com/v17.0/${phone_number_id}/messages`, 
-      data: {
+    const data = {
           "messaging_product": "whatsapp",
           "to": to,
           "type": "template",
@@ -44,7 +40,12 @@ app.post("/webhook", (req, res) => {
                   "code": language_code
               }
           }
-      },
+      }
+    
+    axios({
+      method: "POST",
+      url: `https://graph.facebook.com/v17.0/${phone_number_id}/messages`, 
+      data,
       headers: { "Content-Type": "application/json", Authorization: 'Bearer ' + token },
     }).catch((error) => {
       if (error.response) {
@@ -58,11 +59,8 @@ app.post("/webhook", (req, res) => {
       // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
       // http.ClientRequest in node.js
       console.log(error.request);
-    } else {
-      // Something happened in setting up the request that triggered an Error
-      console.log('Error', error.message);
-    }
-        console.error("Error: There is an error in Post Req - " + error); 
+    } 
+        console.error("Error: There is an error when sending data to facebook - ", data, error); 
     });
 
   }

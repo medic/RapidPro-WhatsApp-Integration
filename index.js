@@ -41,7 +41,7 @@ app.post("/webhook", (req, res) => {
               }
           }
       }
-    
+    console.log('Using token: ', token);
     axios({
       method: "POST",
       url: `https://graph.facebook.com/v17.0/${phone_number_id}/messages`, 

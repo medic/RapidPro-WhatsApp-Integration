@@ -60,7 +60,7 @@ app.post("/webhook", (req, res) => {
       // http.ClientRequest in node.js
       console.log(error.request);
     } 
-        console.error("Error: There is an error when sending data to facebook - ", data); 
+        console.error("Error: There is an error when sending data to facebook ", data); 
     });
 
   }

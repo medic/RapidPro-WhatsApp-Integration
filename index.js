@@ -9,7 +9,6 @@ const request = require("request"),
   app = express().use(body_parser.json()); // creates express http server
   dotenv.config();
 
-
 // Access token for the app
 const token = process.env.WHATSAPP_TOKEN;
 const phone_number_id = process.env.PHONE_NUMBER_ID;

@@ -27,19 +27,30 @@ app.post("/webhook", (req, res) => {
     let text = req.body.text.split("|"); // separate template title and language code
     let to = req.body.to_no_plus;
 
-    let msg_body = text[0];
-    let language_code = text[1] ? text[1] : "en_US"
     const data = {
           "messaging_product": "whatsapp",
           "to": to,
-          "type": "template",
-          "template": {
-              "name": msg_body,
-              "language": {
-                  "code": language_code
-              }
-          }
       }
+
+    let msg_body = text[0];
+    let language_code = text[1]
+    if (!language_code) {
+      data.recipient_type = "individual"
+      data.type = "text"
+      data.text = {
+        body: msg_body,
+        preview_url: false
+      }
+    } else {
+      data.type = "template"
+      data.template = {
+        "name": msg_body,
+        "language": {
+          "code": language_code
+        }
+      }
+    }
+    
     console.log('Using token: ', token);
     axios({
       method: "POST",

@@ -53,7 +53,7 @@ function WAResponseHandler(req, res) {
     } else if (msg.reactions) {
       msgBody = encodeURI(`Client sent an emoji: ${msg.reactions.emoji}`);
     }
-    const date = new Date(msg.timestamp).toISOString();
+    // const date = new Date(msg.timestamp).toISOString();
     //posting data to RP
     axios({
       method: "POST",

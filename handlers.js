@@ -57,7 +57,7 @@ function WAResponseHandler(req, res) {
     //posting data to RP
     axios({
       method: "POST",
-      url: `${process.env.RP_RECEIVE_URL}?from=${from}&text=${msgBody}&date=${date}`,
+      url: `${process.env.RP_RECEIVE_URL}?from=${from}&text=${msgBody}`,
     }).catch((err) => {
       console.log("Error: There is an error in GET Req - " + err);
     });

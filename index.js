@@ -7,11 +7,12 @@ const request = require("request"),
   axios = require("axios").default,
   dotenv = require('dotenv'),
   app = express().use(body_parser.json()); // creates express http server
-  dotenv.config();
+dotenv.config();
 
 // Access token for the app
 const token = process.env.WHATSAPP_TOKEN;
 const phone_number_id = process.env.PHONE_NUMBER_ID;
+
 
 // Sets server port and logs message on success
 app.listen(process.env.PORT || 1337, () => console.log("webhook is listening on port", process.env.PORT || 1337));
@@ -28,49 +29,48 @@ app.post("/webhook", (req, res) => {
     let to = req.body.to_no_plus;
 
     const data = {
-          "messaging_product": "whatsapp",
-          "to": to,
-      }
+      "messaging_product": "whatsapp",
+      "to": to,
+    };
 
     let msg_body = text[0];
-    let language_code = text[1]
+    let language_code = text[1];
     if (!language_code) {
-      data.recipient_type = "individual"
-      data.type = "text"
+      data.recipient_type = "individual";
+      data.type = "text";
       data.text = {
         body: msg_body,
         preview_url: false
-      }
+      };
     } else {
-      data.type = "template"
+      data.type = "template";
       data.template = {
         "name": msg_body,
         "language": {
           "code": language_code
         }
-      }
+      };
     }
-    
-    console.log('Using token: ', token);
+
     axios({
       method: "POST",
-      url: `https://graph.facebook.com/v17.0/${phone_number_id}/messages`, 
+      url: `https://graph.facebook.com/v17.0/${phone_number_id}/messages`,
       data,
       headers: { "Content-Type": "application/json", Authorization: 'Bearer ' + token },
     }).catch((error) => {
       if (error.response) {
-      // The request was made and the server responded with a status code
-      // that falls out of the range of 2xx
-      console.log(error.response.data);
-      console.log(error.response.status);
-      
-    } else if (error.request) {
-      // The request was made but no response was received
-      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-      // http.ClientRequest in node.js
-      console.log(error.request);
-    } 
-        console.error("Error: There is an error when sending data to facebook ", data); 
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.log(error.response.data);
+        console.log(error.response.status);
+
+      } else if (error.request) {
+        // The request was made but no response was received
+        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+        // http.ClientRequest in node.js
+        console.log(error.request);
+      }
+      console.error("Error: There is an error when sending data to facebook ", data);
     });
 
   }
@@ -84,13 +84,21 @@ app.post("/webhook", (req, res) => {
       req.body.entry[0].changes[0].value.messages &&
       req.body.entry[0].changes[0].value.messages[0]
     ) {
-      let from = req.body.entry[0].changes[0].value.messages[0].from; // extract the phone number from the webhook payload
-      let msg_body = req.body.entry[0].changes[0].value.messages[0].text.body; // extract the message text from the webhook payload
-      
+      const msg = req.body.entry[0].changes[0].value.messages[0];
+      const from = msg.from; // extract the phone number from the webhook payload
+      let msgBody = '';
+      if (msg.text) {
+        msgBody = encodeURI(msg.text.body); // extract the message text from the webhook payload
+      } else if (msg.audio) {
+        msgBody = encodeURI('Client sent an audio message, may need help');
+      } else if (msg.reactions) {
+        msgBody = encodeURI(`Client sent an emoji: ${msg.reactions.emoji}`);
+      }
+      const date = new Date(msg.timestamp).toISOString();
       //posting data to RP
       axios({
-        method: "GET",
-        url: `${process.env.RP_RECEIVE_URL}?from=${from}&text=${msg_body}`      
+        method: "POST",
+        url: `${process.env.RP_RECEIVE_URL}?from=${from}&text=${msgBody}&date=${date}`,
       }).catch((err) => {
         console.log("Error: There is an error in GET Req - " + err);
       });
@@ -99,7 +107,7 @@ app.post("/webhook", (req, res) => {
   } else if (req.body.text) {
     res.sendStatus(200);
   } else {
-     // Return a '404 Not Found' if event is not from a RP/WhatsApp API
+    // Return a '404 Not Found' if event is not from a RP/WhatsApp API
     res.sendStatus(404);
   }
 });

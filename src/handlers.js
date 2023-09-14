@@ -1,5 +1,5 @@
 const axios = require("axios").default, dotenv = require('dotenv');
-const { saveLog } = require("./couchdb");
+const { saveLog } = require("./network");
 
 dotenv.config();
 
@@ -58,9 +58,10 @@ function WAResponseHandler(req, res) {
     axios({
       method: "POST",
       url: `${process.env.RP_RECEIVE_URL}?from=${from}&text=${msgBody}`,
-    }).catch((err) => {
-      console.log("Error: There is an error in GET Req - " + err);
-    });
+    })
+      .catch((err) => {
+        console.log("Error: There is an error in GET Req - " + err);
+      });
   }
   return res.sendStatus(200);
 }

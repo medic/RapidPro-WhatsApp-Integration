@@ -1,11 +1,12 @@
 "use strict";
 // Imports dependencies and set up http server
-const useV1Routes = require("./src/utils/routes");
+const { useV1Routes } = require("./src/routes");
 
-const createServer = require("./src/utils/server");
-const server = createServer();
+const createServer = require("./src/server");
 
-useV1Routes(server);
+const app = useV1Routes();
+createServer(app);
+
 
 
 

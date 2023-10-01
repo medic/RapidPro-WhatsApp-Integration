@@ -1,4 +1,5 @@
 const axios = require("axios").default, dotenv = require('dotenv');
+const e = require("express");
 const { saveLog } = require("./network");
 
 dotenv.config();
@@ -66,58 +67,15 @@ function WAResponseHandler(req, res) {
   return res.sendStatus(200);
 }
 
-function RPPostHandler(req, res) {
-  //Parsing request from RP
-  let text = req.body.text.split("|"); // separate template title and language code
-  let to = req.body.to_no_plus;
-
-  const data = {
-    "messaging_product": "whatsapp",
-    "to": to,
-  };
-
-  let msg_body = text[0];
-  let language_code = text[1];
-  if (!language_code) {
-    data.recipient_type = "individual";
-    data.type = "text";
-    data.text = {
-      body: msg_body,
-      preview_url: false
-    };
-  } else {
-    data.type = "template";
-    data.template = {
-      "name": msg_body,
-      "language": {
-        "code": language_code
-      }
-    };
-  }
-
-  return axios({
+async function RPPostHandler(data) {
+  const response = await axios({
     method: "POST",
     url: `https://graph.facebook.com/v17.0/${phone_number_id}/messages`,
     data,
     headers: { "Content-Type": "application/json", Authorization: 'Bearer ' + token },
-  })
-    .then(() => res.sendStatus(200))
-    .catch((error) => {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(error.response.data);
-        console.log(error.response.status);
+  });
 
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(error.request);
-      }
-      console.error("Error: There is an error when sending data to facebook ", data);
-    });
-
+  return response;
 }
 
 module.exports = { reqErrorHandler, WAResponseHandler, RPPostHandler };

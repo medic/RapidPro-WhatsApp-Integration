@@ -64,34 +64,36 @@ function parseRapidproReqData(body) {
 async function webhookController(req, res) {
   // Check the webhook event is from a Page subscription
   console.log(JSON.stringify(req.body, null, 2));
-  if (req.body.text && req.body.to_no_plus) {
-    try {
+
+  try {
+    if (req.body.text && req.body.to_no_plus) {
       const data = parseRapidproReqData(req.body);
       const response = await RPPostHandler(data);
       return res.sendStatus(response.status);
-    } catch (error) {
-      if (error.response) {
-        // The request was made and the server responded with a status code
-        // that falls out of the range of 2xx
-        console.log(error.response.data);
-        console.log(error.response.status);
-
-      } else if (error.request) {
-        // The request was made but no response was received
-        // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-        // http.ClientRequest in node.js
-        console.log(error.request);
-      }
-      console.error("Error: There is an error when sending data to facebook ", error);
-      res.sendStatus(500);
+    } if (req.body.object && req.body.entry) {
+      const entry = req.body.entry;
+      const response = await WAResponseHandler(entry);
+      res.sendStatus(response.status);
+    } else if (req.body.text) {
+      res.sendStatus(200);
+    } else {
+      res.sendStatus(400);
     }
-    return;
-  } if (req.body.object) {
-    WAResponseHandler(req, res);
-  } else if (req.body.text) {
-    res.sendStatus(200);
-  } else {
-    res.sendStatus(400);
+  } catch (error) {
+    if (error.response) {
+      // The request was made and the server responded with a status code
+      // that falls out of the range of 2xx
+      console.log(error.response.data);
+      console.log(error.response.status);
+
+    } else if (error.request) {
+      // The request was made but no response was received
+      // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+      // http.ClientRequest in node.js
+      console.log(error.request);
+    }
+    console.error(error);
+    res.sendStatus(500);
   }
 }
 

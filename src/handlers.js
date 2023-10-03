@@ -49,7 +49,7 @@ function sendMsgToRP(msg) {
     case 'audio':
       msgBody = encodeURI('Client sent an audio message, may need help');
       break;
-    case 'reactions':
+    case 'reaction':
       msgBody = encodeURI(`Client sent an emoji: ${msg.reactions.emoji}`);
       break;
     default:
